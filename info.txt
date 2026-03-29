@@ -1,0 +1,20 @@
+sudo apt update
+sudo apt install mplayer espeak python3-serial
+
+pip install paho-mqtt
+
+mkdir -p voice_gateway
+cd voice_gateway/
+
+nano voice_gateway.py
+
+cd ~
+wget https://github.com/rhasspy/piper/releases/download/v1.2.0/piper_arm64.tar.gz
+tar -xf piper_arm64.tar.gz
+cd ~/piper
+
+# Das Modell (Die Stimme)
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high/de_DE-thorsten-high.onnx
+
+# Die Konfiguration (Zwingend erforderlich)
+wget https://huggingface.co/rhasspy/piper-voices/resolve/main/de/de_DE/thorsten/high/de_DE-thorsten-high.onnx.json

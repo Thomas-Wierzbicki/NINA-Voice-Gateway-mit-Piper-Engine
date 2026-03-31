@@ -16,7 +16,6 @@ AUDIO_DEVICE = "plughw:3,0"
 BASE_DIR     = "/home/pi/piper"
 PIPER_BIN    = f"{BASE_DIR}/piper"
 MODEL_PATH   = f"{BASE_DIR}/de_DE-thorsten-high.onnx"
-#MODEL_PATH   = f"{BASE_DIR}/de_DE-eva_k-x_low.onnx"
 OUTPUT_WAV   = f"{BASE_DIR}/alert.wav"
 
 # --- PTT HARDWARE SETUP ---

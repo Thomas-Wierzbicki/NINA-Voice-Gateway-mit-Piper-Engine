@@ -12,7 +12,7 @@ MQTT_TOPIC = "meshcom/tx"
 
 NODE_A_IP = "192.168.188.190"
 NODE_A_PORT = 1799
-DEFAULT_DST = "DA1TWD-55"
+DST_CALLSIGN = "DA1TWD-55"
 PREFIX = "[NINA]"
 DUTY_CYCLE_SECONDS = 10
 
@@ -25,16 +25,14 @@ def log(text: str) -> None:
     print(f"[{ts}] {text}", flush=True)
 
 
-def send_line_to_meshcom(line: str, dst: str) -> None:
+def send_line_to_meshcom(line: str) -> None:
     line = line.strip()
-    dst = dst.strip() if dst else DEFAULT_DST
-
     if not line:
         return
 
     payload = {
         "type": "msg",
-        "dst": dst,
+        "dst": DST_CALLSIGN,
         "msg": line[:150]
     }
 
@@ -42,17 +40,16 @@ def send_line_to_meshcom(line: str, dst: str) -> None:
     sent = udp_sock.sendto(wire, (NODE_A_IP, NODE_A_PORT))
 
     log(f"SEND -> {NODE_A_IP}:{NODE_A_PORT} ({sent} Bytes)")
-    log(f"DST: {dst}")
     log(f"UDP: {wire.decode('utf-8', errors='replace')}")
 
 
 def queue_worker() -> None:
     log("Queue-Worker gestartet")
     while True:
-        dst, line = send_queue.get()
+        line = send_queue.get()
         try:
-            log(f"QUEUE SEND: dst={dst}, line={line}")
-            send_line_to_meshcom(line, dst)
+            log(f"QUEUE SEND: {line}")
+            send_line_to_meshcom(line)
             log(f"Duty Cycle: warte {DUTY_CYCLE_SECONDS}s")
             time.sleep(DUTY_CYCLE_SECONDS)
         except Exception as e:
@@ -77,42 +74,36 @@ def on_message(client, userdata, msg):
         log("MQTT Payload leer")
         return
 
-    dst = DEFAULT_DST
-    text = ""
-
     try:
         data = json.loads(raw)
-
-        if isinstance(data, dict):
-            if "dst" in data and str(data["dst"]).strip():
-                dst = str(data["dst"]).strip()
-                log(f"JSON erkannt -> dst: {dst}")
-            else:
-                log(f"Kein dst im JSON -> Default: {dst}")
-
-            if "msg" in data and str(data["msg"]).strip():
-                text = str(data["msg"]).strip()
-                log("JSON erkannt -> msg extrahiert")
-            else:
-                log("JSON ohne msg -> keine Aussendung")
-                return
+        if isinstance(data, dict) and "msg" in data:
+            text = str(data["msg"]).strip()
+            log("JSON erkannt -> msg extrahiert")
         else:
-            log("JSON ist kein Objekt -> keine Aussendung")
-            return
-
+            text = raw
+            log("JSON ohne msg -> Rohtext verwendet")
     except json.JSONDecodeError:
-        log("Kein JSON -> keine Aussendung")
+        text = raw
+        log("Kein JSON -> Rohtext verwendet")
+
+    if not text:
+        log("Kein nutzbarer Text")
         return
 
     text = f"{PREFIX} {text}"
 
-    for idx, line in enumerate(text.splitlines(), start=1):
+    lines = text.splitlines()
+    if not lines:
+        log("Keine Zeilen gefunden")
+        return
+
+    for idx, line in enumerate(lines, start=1):
         line = line.strip()
         if not line:
             continue
 
-        log(f"QUEUE ZEILE {idx}: dst={dst}, line={line}")
-        send_queue.put((dst, line))
+        log(f"QUEUE ZEILE {idx}: {line}")
+        send_queue.put(line)
         log(f"Queue-Länge: {send_queue.qsize()}")
 
 

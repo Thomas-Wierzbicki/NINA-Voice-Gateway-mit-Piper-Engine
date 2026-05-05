@@ -11,12 +11,12 @@ import os
 MQTT_BROKER  = "192.168.188.44"
 MQTT_TOPIC   = "meshcom/tx"
 PTT_PORT     = "/dev/ttyUSB0"
-AUDIO_DEVICE = "plughw:3,0"
+AUDIO_DEVICE = "plughw:1,0"
 
 BASE_DIR     = "/home/pi/piper"
 PIPER_BIN    = f"{BASE_DIR}/piper"
 MODEL_PATH   = f"{BASE_DIR}/de_DE-thorsten-high.onnx"
-#MODEL_PATH   = f"{BASE_DIR}/de_DE-eva_k-x_low.onnx"
+# MODEL_PATH   = f"{BASE_DIR}/de_DE-eva_k-x_low.onnx"
 OUTPUT_WAV   = f"{BASE_DIR}/alert.wav"
 
 # --- PTT HARDWARE SETUP ---

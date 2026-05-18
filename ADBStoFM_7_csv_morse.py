@@ -33,7 +33,7 @@ BAKEN_INTERVAL_SEC    = 60
 last_radio_activity   = time.time()
 
 # MORSE & VOICE BEACON KONFIGURATION
-MY_CALLSIGN           = "DEINRUFZEICHEN"
+MY_CALLSIGN           = "DA1TWD"
 MORSE_SPEED_WPM       = 15        
 MORSE_FREQ_HZ         = 800       
 BEACON_VOICE_TEXT     = "Automatisches Gateway meldet Betriebsbereitschaft. Aktuelle Uhrzeit:"

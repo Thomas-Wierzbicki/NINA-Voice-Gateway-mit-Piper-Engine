@@ -1,0 +1,21 @@
+# Python Caches
+__pycache__/
+*.pyc
+
+# Log-Dateien (inklusive rotierender Logs wie .log.1)
+*.log
+*.log.*
+
+# Generierte Audio-Dateien
+*.wav
+
+# Große Datensätze
+aircraft.csv
+
+# Temporäre Backups und Test-Skripte
+*.bak
+*.testing
+
+# Externe Machine Learning Modelle & Gewichte
+g2pW/
+*.onnx
